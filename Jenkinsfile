@@ -71,7 +71,6 @@ pipeline {
               }
            }
         }
-        
         stage("Quality Gate"){
              steps{
                  waitForQualityGate abortPipeline: true
@@ -79,13 +78,11 @@ pipeline {
              }
              
         }
-
         stage('Upload artifact to nexus') {
             steps {
                 sh 'mvn clean deploy -DskipTests'
             }
-        }
-        
+        }        
         stage('Deploy to DEV') {
           environment {
             HOSTS = "dev"
@@ -93,8 +90,7 @@ pipeline {
           steps {
             sh "ansible-playbook ${WORKSPACE}/deploy.yaml --extra-vars \"hosts=$HOSTS workspace_path=$WORKSPACE\""
           }
-         }
-        
+         }        
         stage('Deploy to STAGE env') {
           environment {
             HOSTS = "stage"
@@ -102,14 +98,12 @@ pipeline {
           steps {
             sh "ansible-playbook ${WORKSPACE}/deploy.yaml --extra-vars \"hosts=$HOSTS workspace_path=$WORKSPACE\""
           }
-         }
-         
+         }         
         stage('Approval') {
           steps {
             input("Do you want to proceed?")
           }
-        }
-         
+        }         
         stage('Deploy to Prod env') {
           environment {
             HOSTS = "prod"
